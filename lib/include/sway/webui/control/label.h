@@ -18,7 +18,7 @@ public:
 
 	static void registerEmscriptenClass(lpcstr_t classname);
 
-	static LabelSmartPtr_t create(core::containers::HierarchyNodePtr_t parent, const std::string & nodeId,
+	static LabelSmartPtr_t create(core::NodePtr_t parent, const std::string & nodeId,
 		const webcore::TreeNodeElementCreateInfo & createInfo, emscripten::val styleSheet, const std::string & content);
 
 #pragma endregion
@@ -30,7 +30,7 @@ public:
 	 *    Конструктор класса.
 	 *    Выполняет инициализацию нового экземпляра класса.
 	 */
-	Label(core::containers::HierarchyNodePtr_t parent,
+	Label(core::NodePtr_t parent,
 		const std::string & nodeId, const webcore::TreeNodeElementCreateInfo & createInfo);
 
 	/*!

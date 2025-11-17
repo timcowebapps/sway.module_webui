@@ -19,7 +19,7 @@ public:
 
 	static void registerEmscriptenClass(lpcstr_t classname);
 
-	static ListSmartPtr_t create(core::containers::HierarchyNodePtr_t parent, const std::string & nodeId,
+	static ListSmartPtr_t create(core::NodePtr_t parent, const std::string & nodeId,
 		const webcore::TreeNodeElementCreateInfo & createInfo, emscripten::val styleSheet);
 
 #pragma endregion
@@ -31,7 +31,7 @@ public:
 	 *    Конструктор класса.
 	 *    Выполняет инициализацию нового экземпляра класса.
 	 */
-	List(core::containers::HierarchyNodePtr_t parent,
+	List(core::NodePtr_t parent,
 		const std::string & nodeId, const webcore::TreeNodeElementCreateInfo & createInfo);
 
 	/*!

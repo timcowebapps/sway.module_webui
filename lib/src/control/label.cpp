@@ -6,7 +6,7 @@ namespace sway::webui {
 
 void Label::registerEmscriptenClass(lpcstr_t classname) {
 	emscripten::class_<Label, emscripten::base<webcore::mvc::AView>>(classname)
-		.constructor<core::containers::HierarchyNodePtr_t, std::string, webcore::TreeNodeElementCreateInfo>()
+		.constructor<core::NodePtr_t, std::string, webcore::TreeNodeElementCreateInfo>()
 		.smart_ptr<LabelSmartPtr_t>("LabelSmartPtr_t")
 		.class_function("create", &Label::create, emscripten::allow_raw_pointers())
 		.function("setFontFamily", &Label::setFontFamily)
@@ -15,7 +15,7 @@ void Label::registerEmscriptenClass(lpcstr_t classname) {
 		.function("setText", &Label::setText);
 }
 
-LabelSmartPtr_t Label::create(core::containers::HierarchyNodePtr_t parent, const std::string & nodeId,
+LabelSmartPtr_t Label::create(core::NodePtr_t parent, const std::string & nodeId,
 	const webcore::TreeNodeElementCreateInfo & createInfo, emscripten::val styleSheet, const std::string & content) {
 
 	auto instance = std::make_shared<Label>(parent, nodeId, createInfo);
@@ -25,16 +25,16 @@ LabelSmartPtr_t Label::create(core::containers::HierarchyNodePtr_t parent, const
 	return instance;
 }
 
-Label::Label(core::containers::HierarchyNodePtr_t parent,
+Label::Label(core::NodePtr_t parent,
 	const std::string & nodeId, const webcore::TreeNodeElementCreateInfo & createInfo)
-	: webcore::mvc::AView(parent, core::containers::HierarchyNodeIndex(), nodeId, createInfo) {
+	: webcore::mvc::AView(parent, core::NodeIndex(), nodeId, createInfo) {
 	// Empty
 }
 
 void Label::accept(webcore::ITreeVisitor * visitor) {
 	visitor->visitOnEnter(this);
 
-	for (core::containers::HierarchyNodePtr_t node : getChildren())
+	for (core::NodePtr_t node : getChildren())
 		static_cast<Label *>(node)->accept(visitor);
 }
 
@@ -55,7 +55,7 @@ void Label::setText(const std::string & text) {
 		return;
 
 	setHtmlContent(text);
-	for (core::containers::HierarchyListener * listener : getHostTree()->getListeners())
+	for (core::HierarchyListener * listener : getHostTree()->getListeners())
 		listener->onNodeUpdated(getNodeIndex());
 }
 

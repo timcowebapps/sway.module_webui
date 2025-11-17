@@ -6,13 +6,13 @@ namespace sway::webui {
 
 void List::registerEmscriptenClass(lpcstr_t classname) {
 	emscripten::class_<List, emscripten::base<webcore::mvc::AView>>(classname)
-		.constructor<core::containers::HierarchyNodePtr_t, std::string, webcore::TreeNodeElementCreateInfo>()
+		.constructor<core::NodePtr_t, std::string, webcore::TreeNodeElementCreateInfo>()
 		//.smart_ptr<ListSmartPtr_t>("ListSmartPtr_t")
 		.class_function("create", &List::create, emscripten::allow_raw_pointers())
 		.function("makeItem", &List::makeItem, emscripten::allow_raw_pointers());
 }
 
-ListSmartPtr_t List::create(core::containers::HierarchyNodePtr_t parent, const std::string & nodeId,
+ListSmartPtr_t List::create(core::NodePtr_t parent, const std::string & nodeId,
 	const webcore::TreeNodeElementCreateInfo & createInfo, emscripten::val styleSheet) {
 
 	//auto instance = std::make_shared<List>(parent, nodeId, createInfo);
@@ -23,16 +23,16 @@ ListSmartPtr_t List::create(core::containers::HierarchyNodePtr_t parent, const s
 	return instance;
 }
 
-List::List(core::containers::HierarchyNodePtr_t parent,
+List::List(core::NodePtr_t parent,
 	const std::string & nodeId, const webcore::TreeNodeElementCreateInfo & createInfo)
-	: webcore::mvc::AView(parent, core::containers::HierarchyNodeIndex(), nodeId, createInfo) {
+	: webcore::mvc::AView(parent, core::NodeIndex(), nodeId, createInfo) {
 	// Empty
 }
 
 void List::accept(webcore::ITreeVisitor * visitor) {
 	visitor->visitOnEnter(this);
 
-	for (core::containers::HierarchyNodePtr_t node : getChildren())
+	for (core::NodePtr_t node : getChildren())
 		static_cast<List *>(node)->accept(visitor);
 }
 
