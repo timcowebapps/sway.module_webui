@@ -2,9 +2,7 @@
 #include <sway/webcore/treeupdater.h>
 #include <sway/webcore/css/stylesheet.h>
 
-NAMESPACE_BEGIN(sway)
-NAMESPACE_BEGIN(webui)
-NAMESPACE_BEGIN(control)
+namespace sway::webui {
 
 void List::registerEmscriptenClass(lpcstr_t classname) {
 	emscripten::class_<List, emscripten::base<webcore::mvc::AView>>(classname)
@@ -50,6 +48,4 @@ void List::makeItem(u32_t index, webcore::mvc::AView * item) {
 	addChild(item);
 }
 
-NAMESPACE_END(control)
-NAMESPACE_END(webui)
-NAMESPACE_END(sway)
+} // namespace sway::webui

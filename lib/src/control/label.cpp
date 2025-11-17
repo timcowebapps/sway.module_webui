@@ -2,9 +2,7 @@
 #include <sway/webcore/treeupdater.h>
 #include <sway/webcore/css/stylesheet.h>
 
-NAMESPACE_BEGIN(sway)
-NAMESPACE_BEGIN(webui)
-NAMESPACE_BEGIN(control)
+namespace sway::webui {
 
 void Label::registerEmscriptenClass(lpcstr_t classname) {
 	emscripten::class_<Label, emscripten::base<webcore::mvc::AView>>(classname)
@@ -61,6 +59,4 @@ void Label::setText(const std::string & text) {
 		listener->onNodeUpdated(getNodeIndex());
 }
 
-NAMESPACE_END(control)
-NAMESPACE_END(webui)
-NAMESPACE_END(sway)
+} // namespace sway::webui

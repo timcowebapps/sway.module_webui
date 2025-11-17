@@ -5,9 +5,7 @@
 #include <sway/webcore/treenodeelement.h>
 #include <sway/webcore/prereqs.h>
 
-NAMESPACE_BEGIN(sway)
-NAMESPACE_BEGIN(webui)
-NAMESPACE_BEGIN(control)
+namespace sway::webui {
 
 //typedef std::shared_ptr<class List> ListSmartPtr_t;
 typedef class List * ListSmartPtr_t;
@@ -63,8 +61,6 @@ public:
 	void makeItem(u32_t index, webcore::mvc::AView * item);
 };
 
-NAMESPACE_END(control)
-NAMESPACE_END(webui)
-NAMESPACE_END(sway)
+} // namespace sway::webui
 
 #endif // _SWAY_WEBUI_CONTROL_LIST_H
