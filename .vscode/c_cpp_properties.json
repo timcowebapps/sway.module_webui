@@ -1,0 +1,16 @@
+{
+  "configurations": [
+    {
+      "name": "Mac",
+      "includePath": [
+        "${workspaceFolder}/lib/cxx/include",
+        "${workspaceFolder}/submodules/sway.module_core/lib/cxx/include",
+        "${workspaceFolder}/submodules/sway.module_webcore/lib/cxx/include",
+        "${workspaceFolder}/submodules/sway.module_webcore.mvc/lib/cxx/include",
+        "/Users/apriori85/Documents/Third-party/emsdk/upstream/emscripten/system/include",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
+      ]
+    }
+  ],
+  "version": 4
+}

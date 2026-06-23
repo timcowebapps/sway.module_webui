@@ -1,58 +1,90 @@
-# Запрашиваем минимальную версию CMake
-cmake_minimum_required(VERSION 3.14.3 FATAL_ERROR)
+#--------------------------------------------------------------------------------
+# CMake version
+#--------------------------------------------------------------------------------
 
-# Мета-информация о проекте
-set(META_PROJECT_NAME module_webui)
-set(META_LIB_NAME lib${META_PROJECT_NAME})
-set(META_VERSION_MAJOR 0)
-set(META_VERSION_MINOR 1)
-set(META_VERSION_PATCH 0)
-set(META_VERSION ${META_VERSION_MAJOR}.${META_VERSION_MINOR}.${META_VERSION_PATCH})
-set(META_LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.25.0 FATAL_ERROR)
 
-project(${META_PROJECT_NAME} VERSION ${META_VERSION} LANGUAGES ${META_LANGUAGES})
+#--------------------------------------------------------------------------------
+# Project directories
+#--------------------------------------------------------------------------------
 
-if (NOT TARGET libmodule_core)
-	add_subdirectory(modules/sway.module_core)
+set(MODULE_WEBUI_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(MODULE_WEBUI_LIST_DIR "${CMAKE_CURRENT_LIST_DIR}")
+set(MODULE_WEBUI_LIB_DIR "${MODULE_WEBUI_ROOT_DIR}/lib")
+set(MODULE_WEBUI_BIN_DIR "${CMAKE_SOURCE_DIR}/bin")
+set(MODULE_WEBUI_CMAKE_DIR "${MODULE_WEBUI_ROOT_DIR}/submodules/sway.module_core/cmake_modules")
+
+#--------------------------------------------------------------------------------
+# Include CMake modules
+#--------------------------------------------------------------------------------
+
+include("${MODULE_WEBUI_CMAKE_DIR}/options.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/project_metadata.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/add_submodule.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/set_output_dir.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/set_compile_definitions.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/enable_cxx17.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/enable_coverage.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/modules/create_object_library.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/modules/create_interface.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/modules/logger.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/modules/compiler/clang/create_library.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/modules/compiler/emscripten/setup.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/modules/compiler/emscripten/create_library.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/modules/compiler/emscripten/gen_target_name.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/modules/compiler/emscripten/set_optimization.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/modules/compiler/emscripten/set_environment.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/modules/compiler/emscripten/set_compilation.cmake")
+include("${MODULE_WEBUI_CMAKE_DIR}/modules/compiler/emscripten/set_modularize.cmake")
+
+#--------------------------------------------------------------------------------
+# Options
+#--------------------------------------------------------------------------------
+
+set_glob_options()
+
+option(MODULE_WEBUI_ENVIRONMENT "Environment variable" OFF)
+option(MODULE_WEBUI_COMPILATION "Compilation variable" OFF)
+
+#--------------------------------------------------------------------------------
+# [EMSCRIPTEN]: Setup
+#--------------------------------------------------------------------------------
+
+if(GLOB_EMSCRIPTEN_PLATFORM)
+  emscripten_setup()
 endif()
 
-if (NOT TARGET libmodule_webcore)
-	add_subdirectory(modules/sway.module_webcore)
-endif()
+#--------------------------------------------------------------------------------
+# Project
+#--------------------------------------------------------------------------------
 
-if (NOT TARGET libmodule_webcore.mvc)
-	add_subdirectory(modules/sway.module_webcore.mvc)
-endif()
+project_metadata("webui" 0.2.0)
+project(${MODULE_WEBUI_PROJ_NAME} VERSION ${MODULE_WEBUI_VERSION} LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_COMPILER "emcc")
+#---------------------------------------------------------------------------------
+# Submodules
+#---------------------------------------------------------------------------------
 
-# Определяем каталог вывода по умолчанию
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-	set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin/dbg)
-	set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin/dbg)
-else()
-	set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
-	set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
-endif()
+add_submodule("module_core" submodules/sway.module_core)
+add_submodule("module_webcore" submodules/sway.module_webcore)
+add_submodule("module_webcore.mvc" submodules/sway.module_webcore.mvc)
 
-set(MODULE_DIR ${CMAKE_CURRENT_LIST_DIR})
+#--------------------------------------------------------------------------------
+# Executable output path
+#--------------------------------------------------------------------------------
 
-# Добавляем пути для поиска хедеров
-include_directories("/home/bonus85/emsdk/emscripten/incoming/system/include")
-include_directories(${MODULE_DIR}/include)
-include_directories(${MODULE_DIR}/modules/sway.module_core/include)
-include_directories(${MODULE_DIR}/modules/sway.module_webcore/include)
-include_directories(${MODULE_DIR}/modules/sway.module_webcore.mvc/include)
+set_output_dir(${MODULE_WEBUI_BIN_DIR})
 
-# Получаем пути ко всем хедерам и исходникам библиотеки
-file(GLOB_RECURSE MODULE_HEADERS ${MODULE_DIR}/include/*.*)
-file(GLOB_RECURSE MODULE_SOURCES ${MODULE_DIR}/src/*.*)
+#--------------------------------------------------------------------------------
+# Include directories
+#--------------------------------------------------------------------------------
 
-# Добавляем в проект цель для сборки статической библиотеки
-add_library(${META_LIB_NAME} STATIC ${MODULE_SOURCES})
-set_target_properties(${META_LIB_NAME} PROPERTIES OUTPUT_NAME ${META_PROJECT_NAME})
-set_target_properties(${META_LIB_NAME} PROPERTIES PREFIX "")
-set_target_properties(${META_LIB_NAME} PROPERTIES SUFFIX ".a.${META_VERSION}")
+include_directories("${MODULE_WEBUI_LIST_DIR}/submodules/sway.module_core/lib/cxx/include")
+include_directories("${MODULE_WEBUI_LIST_DIR}/submodules/sway.module_webcore/lib/cxx/include")
+include_directories("${MODULE_WEBUI_LIST_DIR}/submodules/sway.module_webcore.mvc/lib/cxx/include")
 
-target_link_libraries(${META_LIB_NAME} libmodule_webcore libmodule_webcore.mvc)
+#--------------------------------------------------------------------------------
+# Library
+#--------------------------------------------------------------------------------
+
+add_subdirectory(lib/cxx)
